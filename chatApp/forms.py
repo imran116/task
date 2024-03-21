@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from chatApp.models import Recipe
+from chatApp.models import AiResponse
 
 
 class CreateUser(UserCreationForm):
@@ -14,5 +14,5 @@ class CreateUser(UserCreationForm):
 
 class Q_form(forms.ModelForm):
     class Meta:
-        model = Recipe
+        model = AiResponse
         fields = ('query',)
