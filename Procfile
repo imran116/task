@@ -1,1 +1,1 @@
-web: gunicorn chatApp.wsgi --log-file -
+web: gunicorn grok_ai.wsgi --log-file -
