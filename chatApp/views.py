@@ -1,11 +1,9 @@
-import json
 from django.contrib.auth.decorators import login_required
-from chatApp.models import AiResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from chatApp.forms import CreateUser, Q_form
 from django.contrib.auth import login, logout, authenticate
-import requests
+
 # hugchat
 from hugchat import hugchat
 from hugchat.login import Login
@@ -44,7 +42,6 @@ def login_view(request):
 
 
 def get_recipe(request):
-    form = Q_form()
     if request.method == 'POST':
         form = Q_form(data=request.POST)
         if form.is_valid():
@@ -63,8 +60,12 @@ def get_recipe(request):
             model_obj.query = msg
             model_obj.ai_response = response
             form.save()
+            return render(request, 'index.html', context={'msg': msg, 'response': response, })
+        else:
+            error = form.errors
+            print(error)
+            return render(request, 'index.html', context={'error': error})
 
-            return render(request, 'index.html', context={'msg': msg, 'response': response})
     return redirect('home')
 
 
@@ -72,36 +73,3 @@ def get_recipe(request):
 def user_logout(request):
     logout(request)
     return redirect('login')
-
-# old code
-# api_key = "9pUgmOV/FJg/tVFzfEyV9w==NmpTRVsskmtliRIf"
-# form = Q_form()
-# if request.method == 'POST':
-#     form = Q_form(data=request.POST)
-#     if form.is_valid():
-#
-#         query = form.cleaned_data.get('query')
-#         api_url = 'https://api.api-ninjas.com/v1/recipe?query={}'.format(query)
-#         response = requests.get(api_url, headers={'X-Api-Key': api_key})
-#         if response.status_code == requests.codes.ok:
-#             recipe = json.loads(response.text)
-#             for item in recipe:
-#                 title = item['title']
-#                 ingredients = item['ingredients']
-#                 servings = item['servings']
-#                 instructions = item['instructions']
-#                 form_obj = form.save(commit=False)
-#                 form_obj.title = title
-#                 form_obj.ingredients = ingredients
-#                 form_obj.instructions = instructions
-#                 form_obj.servings = servings
-#                 form.save()
-#                 return render(request, 'index.html', context={
-#                     'title': title,
-#                     'ingredients': ingredients,
-#                     'servings': servings,
-#                     'instructions': instructions})
-#         else:
-#             print("Error:", response.status_code, response.text)
-#
-#         print(query)
